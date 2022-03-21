@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const router = require("./routes/index");
 const errorHandler = require("./middleware/ErrorHandlerMiddleware")
 
@@ -9,7 +10,7 @@ const PORT = process.env.PORT || 4000;
 const app = express();
 app.use(cors())
 app.use(express.json())
-app.use()
+app.use(cookieParser());
 app.use("/api", router)
 // должен быть в самом конце после подключения к роутам
 app.use(errorHandler)
