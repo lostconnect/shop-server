@@ -5,10 +5,11 @@ const cors = require("cors");
 const router = require("./routes/index");
 const errorHandler = require("./middleware/ErrorHandlerMiddleware")
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const app = express();
 app.use(cors())
 app.use(express.json())
+app.use()
 app.use("/api", router)
 // должен быть в самом конце после подключения к роутам
 app.use(errorHandler)

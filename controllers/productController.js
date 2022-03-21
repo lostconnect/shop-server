@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const ApiError = require("../error/ApiError");
 
 class ProductController {
   async create(req, res) {
@@ -12,9 +13,7 @@ class ProductController {
   }
 
   async getAll(req, res) {
-    let { limit, page } = req.query;
-    limit = limit || 2;
-    page = page || 1;
+    let { limit = 2, page = 1 } = req.query;
 
     let skip = page * limit - limit;
     const count = await Product.count();
@@ -28,12 +27,13 @@ class ProductController {
     return res.json(product);
   }
 
-  async delete(req, res) {
+  async delete(req, res, next) {
     const { id } = req.params;
-    Product.deleteOne({id}).then(() => {
-      console.log("deleted");
-    });
-    return res.json({ message: "removed" });
+    const result = await Product.deleteOne({id});
+    if (result.deletedCount) {
+      return res.json({ message: "removed" });
+    }
+    return next(ApiError.badRequest(`Product with id ${id} does not exist`));
   }
 }
 
