@@ -1,0 +1,11 @@
+JWT
+
+header.payload.signature
+
+npm i jsonwebtoken
+npm i bcrypt
+
+
+1. обработка ошибок на продуктах
+2. регистрацию пользователя 
+3. обработка на проверка регистрации 
