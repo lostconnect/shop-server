@@ -1,10 +1,9 @@
 // класс будет расширять error стандартный ;
 class ApiError extends Error {
   constructor(status, message) {
-    super(); //расширяем родительский конструктор
+    super(message); //расширяем родительский конструктор
     // присваемваем то что получаем параметром
     this.status = status;
-    this.message = message;
   }
 
   //  создадим статические функции, которые можно вызывать без создания объекта
@@ -15,6 +14,10 @@ class ApiError extends Error {
 
   static badRequest(message) {
     return new ApiError(400, message);
+  }
+
+  static unauthorized(message) {
+    return new ApiError(401, 'User is not authorized');
   }
 
   static internal(message) {

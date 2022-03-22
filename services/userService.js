@@ -3,6 +3,7 @@ const UserModel = require("../models/user");
 const ApiError = require("../error/ApiError");
 const TokenService = require("../services/tokenService");
 const UserDto = require("../dto/userDto");
+const TokenModel = require("../models/token");
 
 class UserService {
   async registration(email, password) {
@@ -46,6 +47,28 @@ class UserService {
   async logout(refreshToken) {
     const result = await TokenService.removeRefreshToken(refreshToken);
     return result;
+  }
+
+  async check(refreshToken) {
+    if (!refreshToken) {
+      throw ApiError.unauthorized();
+    }
+
+    const userData = TokenService.validateRefreshToken(refreshToken);
+    const tokenData = await TokenModel.findOne({ refreshToken });
+    if (!userData || !tokenData) {
+      throw ApiError.unauthorized();
+    }
+
+    const user = await UserModel.findById(userData.id);
+    const userDto = new UserDto(user);
+    const tokens = TokenService.generateTokens({ ...userDto });
+
+    await TokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
+    return {
+      user: userDto,
+      ...tokens
+    }
   }
 }
 

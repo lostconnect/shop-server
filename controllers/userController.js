@@ -44,14 +44,22 @@ class UserController {
   }
 
   async check(req, res, next) {
-    const { id } = req.query;
+    try {
+      const { id } = req.query;
 
-    //проверка
-    if (!id) {
-      return next(ApiError.badRequest("Не задан id"));
+      if (!id) {
+        return next(ApiError.badRequest("Не задан id"));
+      }
+
+      const { refreshToken } = req.cookies;
+      const userData = await UserService.check(refreshToken);
+      res.cookie('refreshToken', userData.refreshToken, { maxAge: 10 * 24 * 60 * 60, httpOnly: true }); // 10 days
+      res.cookie('accessToken', userData.accessToken, { maxAge: 30 * 60, httpOnly: true }); // 30 minutes
+
+      return res.json(userData);
+    } catch (e) {
+      return next(e);
     }
-
-    res.json({ id });
   }
 }
 
