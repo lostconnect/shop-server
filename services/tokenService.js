@@ -34,6 +34,15 @@ class TokenService {
       return null;
     }
   }
+
+  validateAccessToken(accessToken) {
+    try {
+      const userData = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
+      return userData;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 module.exports = new TokenService();
