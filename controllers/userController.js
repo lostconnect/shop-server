@@ -32,6 +32,17 @@ class UserController {
     }
   }
 
+  async logout(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      const result = await UserService.logout(refreshToken);
+      res.clearCookie('refreshToken');
+      return res.json(result);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
   async check(req, res, next) {
     const { id } = req.query;
 

@@ -8,13 +8,13 @@ class ApiError extends Error {
   }
 
   //  создадим статические функции, которые можно вызывать без создания объекта
-  static badRequest(message) {
+  static notFound(message) {
     //передаем статус код и сообщение об ошибке
-    return new ApiError(400, message);
+    return new ApiError(404, message);
   }
 
-  static notFound(message) {
-    return new ApiError(404, message);
+  static badRequest(message) {
+    return new ApiError(400, message);
   }
 
   static internal(message) {

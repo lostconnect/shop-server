@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const UserModel = require("../models/user");
 const ApiError = require("../error/ApiError");
-const tokenService = require("../services/tokenService");
+const TokenService = require("../services/tokenService");
 const UserDto = require("../dto/userDto");
 
 class UserService {
@@ -15,8 +15,8 @@ class UserService {
     const user = await UserModel.create({ email, password: hashPassword });
 
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
+    const tokens = TokenService.generateTokens({ ...userDto });
+    await TokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
 
     return {
       user: userDto,
@@ -34,13 +34,18 @@ class UserService {
       throw ApiError.badRequest("Wrong password");
     }
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
+    const tokens = TokenService.generateTokens({ ...userDto });
 
-    await tokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
+    await TokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
     return {
       user: userDto,
       ...tokens
     }
+  }
+
+  async logout(refreshToken) {
+    const result = await TokenService.removeRefreshToken(refreshToken);
+    return result;
   }
 }
 
