@@ -23,6 +23,25 @@ class UserService {
       ...tokens
     }
   }
+
+  async login(email, password) {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      throw ApiError.badRequest(`User with email ${email} does not exists`);
+    }
+    const isPasswordEquals = await bcrypt.compare(password, user.password);
+    if (!isPasswordEquals) {
+      throw ApiError.badRequest("Wrong password");
+    }
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    await tokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
+    return {
+      user: userDto,
+      ...tokens
+    }
+  }
 }
 
 module.exports = new UserService();
