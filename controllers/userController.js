@@ -1,6 +1,7 @@
 const {validationResult} = require("express-validator");
 const ApiError = require("../error/ApiError");
 const UserService = require("../services/userService");
+const CONFIG = require("../config");
 
 class UserController {
   async registration(req, res, next) {
@@ -12,8 +13,8 @@ class UserController {
 
       const {email, password} = req.body;
       const userData = await UserService.registration(email, password);
-      res.cookie('refreshToken', userData.refreshToken, { maxAge: 10 * 24 * 60 * 60, httpOnly: true }); // 10 days
-      res.cookie('accessToken', userData.accessToken, { maxAge: 30 * 60, httpOnly: true }); // 30 minutes
+      res.cookie('refreshToken', userData.refreshToken, { maxAge: CONFIG.COOKIE_REFRESH_LIFETIME, httpOnly: true });
+      res.cookie('accessToken', userData.accessToken, { maxAge: CONFIG.COOKIE_ACCESS_LIFETIME, httpOnly: true });
       return res.json(userData);
     } catch (e) {
       return next(e);
@@ -24,8 +25,8 @@ class UserController {
     try {
       const { email, password } = req.body;
       const userData = await UserService.login(email, password);
-      res.cookie('refreshToken', userData.refreshToken, { maxAge: 10 * 24 * 60 * 60, httpOnly: true }); // 10 days
-      res.cookie('accessToken', userData.accessToken, { maxAge: 30 * 60, httpOnly: true }); // 30 minutes
+      res.cookie('refreshToken', userData.refreshToken, { maxAge: CONFIG.COOKIE_REFRESH_LIFETIME, httpOnly: true });
+      res.cookie('accessToken', userData.accessToken, { maxAge: CONFIG.COOKIE_ACCESS_LIFETIME, httpOnly: true });
       return res.json(userData);
     } catch (e) {
       return next(e);
@@ -53,8 +54,8 @@ class UserController {
 
       const { refreshToken } = req.cookies;
       const userData = await UserService.check(refreshToken);
-      res.cookie('refreshToken', userData.refreshToken, { maxAge: 10 * 24 * 60 * 60, httpOnly: true }); // 10 days
-      res.cookie('accessToken', userData.accessToken, { maxAge: 30 * 60, httpOnly: true }); // 30 minutes
+      res.cookie('refreshToken', userData.refreshToken, { maxAge: CONFIG.COOKIE_REFRESH_LIFETIME, httpOnly: true });
+      res.cookie('accessToken', userData.accessToken, { maxAge: CONFIG.COOKIE_ACCESS_LIFETIME, httpOnly: true });
 
       return res.json(userData);
     } catch (e) {
